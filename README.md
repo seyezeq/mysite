@@ -4,10 +4,17 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 # mysit
 
 #### 介绍
 Django练手项目
+=======
+# mysite
+
+#### 介绍
+Django练手项目
+>>>>>>> 355f96965da37e4eff536289a110a1e20d248d1d
 =======
 # mysite
 
