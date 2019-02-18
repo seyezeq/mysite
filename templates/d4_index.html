@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>查询遍历输出</title>
+</head>
+<body>
+    {# 导入过滤器文件 #}
+    {% load my_filter %}
+
+    <table style="width:500px;padding:30px;">
+        <thead>
+            <tr> <td>编号</td> <td>用户名</td> <td>密码</td> </tr>
+        </thead>
+
+        <tbody>
+
+            {# 遍历输出 #}
+            {% for item in res %}
+            <tr>    
+            <td>{{ item.id }}</td>
+            <td>{{ item.username }}</td>
+            <td>{{ item.password }}</td>
+            </tr>
+            {% endfor %}
+
+
+        </tbody>
+
+
+    </table>
+
+    <br />
+
+    {# get()方法返回的数据展示 #}
+
+    用户名：{{ res_one.username }} 密码 : {{ res_one.password }}
+
+    <br />
+
+    {# 通过定制字段取值输出 #}
+
+    {{ res_s.0.password }}
+
+    <br />
+    {% for item in res_list %}
+    {% my_str_test item.name item.gender item.score %}:{{ item.score }}
+    {% endfor %}
+</body>
+</html>

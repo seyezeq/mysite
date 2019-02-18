@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>我的购物车</title>
+</head>
+{# 导入过滤器 #}
+{% load my_filter %}
+<body>
+
+    {{ 123 | my_str }}
+    {{ cartlist_old }}
+
+    {# 判断购物车是否存在 #}
+    {% if cartlist == 0 %}
+    暂无购买商品
+    {% else %}
+    
+    {# 遍历输出购物车列表 #}
+
+        <table style="padding:20px;line-height:30px;">
+            <thead>
+                <tr>
+                    <td>商品编号</td><td>商品名称</td><td>商品价格</td><td>购买数量</td>
+                </tr>
+            </thead>
+            <tbody>
+        {% for item in cartlist %}
+        <tr>
+                <td>{{ item.id }}</td><td>{{ item.name }}</td><td>{{ item.price }}</td>
+                <td>{{ item.id | supermarket_count:cartlist_old }}</td>
+    </tr>
+        {% endfor %}
+    </tbody>    
+    </table>
+        
+
+    {% endif %}   
+</body>
+</html>

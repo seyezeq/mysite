@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>测试</title>
+    <style>
+    .round_icon{
+  width: 134px;
+  height: 134px;
+  display: flex;
+  border-radius: 50%;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+    </style>
+    <script src="{% static 'js/jquery-1.12.1.min.js' %}"></script>
+    
+</head>
+<body>
+
+  <form id="test_form" method="POST" enctype="multipart/form-data">
+
+    <input name='img' type='file'  />
+
+    <input  type="button" onclick="test_click()" value="提交" />
+
+  </form>
+
+  {{ slist }}
+
+  {{ username }}
+
+  {% if username == 'admin' %}
+  管理员
+  {% else %}
+  非管理员
+  {% endif %}
+
+  <script>
+
+  function test_click(){
+    
+    /*
+    $.getJSON('/test123/你好', function (data) {
+               
+                alert(data.name);
+
+            });*/
+
+    /*
+            $.post('/test123/123',{'name':'你好'},function(msg){
+
+              alert(msg.name);
+
+            },'json');*/
+
+        
+            $.ajax({
+url : '/mytest/savecookie',
+data: {'name':'123'},
+type : "GET",
+dataType : 'text',
+success : function (obj){
+alert(obj);
+}
+});
+
+}
+  
+  </script>
+
+  <img src='/upload/123.jpg' class='round_icon' />
+
+  <img src='/tu' />
+    
+</body>
+</html>

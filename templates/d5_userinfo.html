@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>用户详情页</title>
+<style>
+.round_pic{
+    /*宽*/
+    width: 134px;
+    /*高*/
+    height: 134px;
+    /*显示方式*/
+    display:flex;
+    /*定义圆角*/
+    border-radius: 50%;
+    /*对齐*/
+    align-items: center;
+    /*水平对齐*/
+    justify-content: center;
+    /*截图*/
+    overflow: hidden;
+}
+</style>
+</head>
+<body>
+
+    <label>用户名</label> {{ res.username }}<br /><br />
+    <label>密码</label> {{ res.password }}<br /><br />
+    <label>头像</label>
+    <br /><br />
+    <img src='/upload/{{ res.img }}' class="round_pic" />
+    
+</body>
+</html>

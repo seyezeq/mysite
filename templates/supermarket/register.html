@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+{# 使用静态文件路径，需要导入静态文件夹 #}
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>注册页面</title>
+    {# 导入jquery库 #}
+    <script src="{% static 'js/jquery-1.12.1.min.js' %}"></script>
+    {# 导入axios库 #}
+    <script src="{% static 'js/axios.js' %}"></script>
+</head>
+<body>
+
+    <label>用户名</label> <input id="username" type="text" /><br /><br />
+    <label>密 码</label> <input id="password" type="password" /><br /><br />
+
+    <span id='waite' style="display:none"> 请稍后，正在提交您的请求。。。。。 </span>
+
+    <br /><br />
+
+    <input id="sub" onclick="reg()" type="button" value="提交注册" />
+
+
+    <script>
+    
+    //定义方法用来提交注册
+    function reg(){
+
+        var username = $("#username").val();
+        var password = $("#password").val();
+
+        //是用axios来请求接口
+        //初始化传参
+        let param = new URLSearchParams();
+        //将参数传递给对象
+        param.append('username',username);
+        param.append('password',password);
+
+        //定义拦截器
+        axios.interceptors.request.use(function(config){
+
+                //将按钮设置失效
+                $("#sub").attr({disabled:'disabled'});
+                //显示提示文字
+                $("#waite").show();
+                //返回配置文件
+                return config;
+        });
+
+        axios({
+            //指定请求地址
+            url:'/supermarket/do_reg',
+            //请求参数
+            data:param,
+            //请求类型
+            method:'post',
+            //接口返回值类型
+            responseType:'json'
+        })
+        .then(function(obj){
+            //将按钮失效去除
+            $("#sub").removeAttr('disabled');
+            //将提示文字隐藏
+            $("#waite").hide();
+            console.log(obj);
+            alert(obj.data.msg);
+            //进行页面跳转
+            if(obj.data.msg == '恭喜您，注册成功'){
+
+                //跳转
+                window.location.href='/supermarket/login';
+
+            }
+
+        });
+
+        //进行请求后台接口
+        // $.ajax({
+        //         //请求地址
+        //         url:'/supermarket/do_reg',
+        //         //请求参数
+        //         data:{'username':username,'password':password},
+        //         //请求类型
+        //         type:'POST',
+        //         //接口返回值类型
+        //         dataType:'json',
+        //         //打印返回值
+        //         success:function(obj){
+        //             alert(obj.msg);
+        //         },
+        //         //前置操作
+        //         beforeSend:function(){
+        //             //将按钮设置失效
+        //             $("#sub").attr({disabled:'disabled'});
+        //         },
+        //         //后置操作
+        //         complete:function(){
+        //             //将按钮生效
+        //             $("#sub").removeAttr('disabled');
+        //         }
+
+        // });
+
+
+    }
+    </script>
+    
+</body>
+</html>

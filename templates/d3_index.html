@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>自定义过滤器的使用</title>
+    <style>
+    table {border: 1px solid blueviolet;padding: 30px;}
+    table tr {border: 1px solid blueviolet;}
+    .tr1{background-color: brown;}
+    .tr2{background-color: chartreuse;}
+    </style>
+</head>
+<body>
+
+    {# 导入过滤器文件 #}
+    {% load my_filter %}
+
+    {{ test_str | my_str }}
+
+    {# 两个参数，进行调用 #}
+    {{ '你好' | my_str_two:'不好' }}
+
+    {# 调用多参数的过滤器 #}
+    {% my_str_many '你好' '不好' '啊' %}
+
+    <br />
+    {{ test_list | length }}
+    <br />
+
+    {# 使用逻辑判断 #}
+    {% if test_int == 100 %}
+    等于100
+    {% else %}
+    不等于100
+    {% endif %}
+
+    {% if test_int > 100 %}
+    大于 100
+    {% elif test_int < 100 %}
+    小于 100
+    {% else %}
+    等于100
+    {% endif %}
+
+    <br />
+
+    {# for 和 if 嵌套 #}
+    <table>
+    {% for item in test_list %}
+        
+        {% if forloop.counter|get_line == 0 %}
+        <tr class='tr2'>
+        {% else %}
+        <tr class='tr1'>
+        {% endif %}
+            <td>
+            {{ item }}
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    {# 使用内置过滤器转义html标签 #}
+    {{ test_b | safe }}
+
+    <br />
+
+    {# 输出后台table #}
+    {{ my_table | safe }}
+
+    <br />
+    
+</body>
+</html>

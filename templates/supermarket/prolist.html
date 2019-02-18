@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+        {# 使用静态文件路径，需要导入静态文件夹 #}
+        {% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>商品列表页面</title>
+    {# 导入jquery库 #}
+    <script src="{% static 'js/jquery-1.12.1.min.js' %}"></script>
+    {# 导入axios库 #}
+    <script src="{% static 'js/axios.js' %}"></script>
+</head>
+<body>
+
+
+    欢迎您，{{ username }}   &nbsp; <a href="/supermarket/logout">注销</a> &nbsp;&nbsp; <a href="/supermarket/cartlist">我的购物车</a>
+
+    &nbsp;&nbsp;
+    <a href="/supermarket/clearcart">清空购物车</a>
+
+    {# 遍历商品列表 #}
+    <table style="padding:20px;line-height:30px;">
+        <thead>
+            <tr><td>编号</td><td>名称</td><td>价格</td><td>操作</td></tr>
+        </thead>
+    {% for item in res %}
+
+    <tr id="tr_{{ item.id }}"> <td>{{ item.id }}</td> <td>{{ item.name }}</td> 
+        
+        <td><input type="text" id="input_{{ item.id }}"  value='{{ item.price }}' /></td> 
+    
+    <td>
+
+        {% if username == 'admin' %}
+        <button onclick="edit('{{ item.id }}')">编辑</button>
+        &nbsp;
+        <button onclick="del('{{ item.id }}')">删除</button>
+        {% else %}
+        <button onclick="get('{{ item.id }}')">加入购物车</button>
+        {% endif %}
+
+    </td>
+    
+    </tr>
+
+    {% endfor %}
+    </table>
+
+    <script>
+
+    //定义添加购物车逻辑
+    function get(id){
+
+
+        //请求接口，删除库中数据
+        //是用axios来请求接口
+        //初始化传参
+        let param = new URLSearchParams();
+        //将参数传递给对象
+        param.append('id',id);
+
+            axios({
+            //指定请求地址
+            url:'/supermarket/addcart',
+            //请求参数
+            data:param,
+            //请求类型
+            method:'post',
+            //接口返回值类型
+            responseType:'text'
+        })
+        .then(function(obj){
+            
+          console.log(obj);
+          alert(obj.data);
+
+        });
+
+
+
+
+    }
+    
+    //定义修改方法
+    function edit(id){
+
+
+        //请求接口，删除库中数据
+        //是用axios来请求接口
+        //初始化传参
+        let param = new URLSearchParams();
+        //将参数传递给对象
+        param.append('id',id);
+        param.append('price',$("#input_"+id).val());
+
+            axios({
+            //指定请求地址
+            url:'/supermarket/proedit',
+            //请求参数
+            data:param,
+            //请求类型
+            method:'post',
+            //接口返回值类型
+            responseType:'text'
+        })
+        .then(function(obj){
+            
+          console.log(obj);
+
+        });
+
+
+    }
+
+
+
+
+    //定义删除方法
+    function del(id){
+
+
+        //询问用户是否确定
+        if(confirm('请问是否确定') == false){
+
+            return false;
+        }
+
+        //删除页面元素
+        $("#tr_"+id).remove();
+
+        //请求接口，删除库中数据
+        //是用axios来请求接口
+        //初始化传参
+        let param = new URLSearchParams();
+        //将参数传递给对象
+        param.append('id',id);
+
+            axios({
+            //指定请求地址
+            url:'/supermarket/prodel',
+            //请求参数
+            data:param,
+            //请求类型
+            method:'post',
+            //接口返回值类型
+            responseType:'text'
+        })
+        .then(function(obj){
+            
+          console.log(obj);
+
+        });
+
+
+    }
+    
+    
+    </script>
+    
+</body>
+</html>

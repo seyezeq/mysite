@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>mytem</title>
+</head>
+<body>
+
+
+    这里是类视图的模板文件
+
+    {# 遍历输出user_list #}
+    {% for item in user_list %}
+    用户名:{{ item.username}},密码:{{ item.password }} <br />
+    {% endfor %}
+    
+</body>
+</html>

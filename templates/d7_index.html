@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+{# 使用静态文件路径，需要导入静态文件夹 #}
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>异步提交</title>
+{# 导入jquery库 #}
+<script src="{% static 'js/jquery-1.12.1.min.js' %}" ></script>
+<script src="{% static 'js/axios.js' %}" ></script>
+</head>
+<body>
+
+    这里是第七天首页
+    <br /><br />
+    <label>用户名</label> <input id="username" type="text"  />
+
+    <br /><br />
+    <input id='sub' type="button" value="提交" onclick="test_click()"  />
+
+    {{ user_list }}
+
+    <script>
+    
+        //定义点击方法
+        function test_click(){
+
+            //发送get请求
+            // $.getJSON('/d7_json/'+$("#username").val(),function(data){
+
+            //         alert(data.name);
+
+            // });
+
+            //发送post请求
+            // $.post('/d7_json/1234',{'name':'你好我是post'},function(data){
+
+            //         alert(data.name);
+
+            // },'json');
+
+
+//             $.ajax({
+// url : '/d7_json/1234',
+// data: {'name':'123'},
+// type : "POST",
+// dataType : 'json',
+// success : function (obj){
+// alert(obj.name)
+// },beforeSend: function(){
+//     $("#sub").attr({disabled: "disabled"});
+// },complete: function () {
+//         $("#sub").removeAttr("disabled");
+//     },
+// });
+
+let param = new URLSearchParams();
+param.append('name','fred');
+
+
+axios.interceptors.request.use(function (config) {
+    // Do something before request is sent
+    $("#sub").attr({disabled: "disabled"});
+    return config;
+  });
+
+axios({
+  method: 'post',
+  url: '/d7_json/1234',
+  data:param,
+})
+.then(function (obj) {
+   alert(obj.data.name);
+   $("#sub").removeAttr("disabled");
+  });
+
+
+        }
+    </script>
+    
+</body>
+</html>

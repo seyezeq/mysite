@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+        {# 使用静态文件路径，需要导入静态文件夹 #}
+        {% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>登录页面</title>
+    {# 导入jquery库 #}
+    <script src="{% static 'js/jquery-1.12.1.min.js' %}"></script>
+    {# 导入axios库 #}
+    <script src="{% static 'js/axios.js' %}"></script>
+</head>
+<body>
+
+    <h1>欢迎登录</h1>
+    
+    <br /><br />
+
+    <label>用户名</label> <input id="username" type="text" /><br /><br />
+    <label>密 码</label> <input id="password" type="password" /><br /><br />
+
+
+    {# 使用html5 的进度条标签 max代表最大值 value起始值 #}
+    <progress style="width:400px;" id="pg" max="100" value="0" ></progress>
+
+    <br /><br />
+
+    <button id='sub' onclick="login()" >提交登录</button>
+
+    <!--<input id="sub" onclick="login()" type="button" value="登录" />-->
+
+
+    <script>
+        //建立一个进度条对象
+        let pg = document.getElementById('pg'); 
+
+
+
+        
+        //定义登录方法
+        function login(){
+
+        var username = $("#username").val();
+        var password = $("#password").val();
+
+
+        //定义拦截器
+        axios.interceptors.request.use(function(config){
+
+                
+                //启动进度条
+                icount = setInterval(function(){
+
+                    //判断进度条的进度
+                    if(pg.value != 100){
+
+                        pg.value++;
+
+                    }else{
+
+                        pg.value = 0;
+                    }
+
+                },100);
+
+                //返回配置文件
+                return config;
+        });
+
+
+        //是用axios来请求接口
+        //初始化传参
+        let param = new URLSearchParams();
+        //将参数传递给对象
+        param.append('username',username);
+        param.append('password',password);
+
+            axios({
+            //指定请求地址
+            url:'/supermarket/do_login',
+            //请求参数
+            data:param,
+            //请求类型
+            method:'post',
+            //接口返回值类型
+            responseType:'text'
+        })
+        .then(function(obj){
+            
+            console.log(obj);
+
+            //停止进度条进度
+            clearInterval(icount);
+            //将进度条填充到100
+            pg.value = 100;
+            
+            
+            //判断登录是否成功
+            if(obj.data == '登录成功')
+            {
+
+             //加入延时，达到线程同步的效果
+             setTimeout(func,500);
+             function func(){
+
+                alert(obj.data);
+                window.location.href='/supermarket/productlist';
+
+             }
+              
+
+            }else{
+
+                alert(obj.data);
+
+
+            }
+
+        });
+
+        }
+    
+    
+    </script>
+    
+</body>
+</html>
