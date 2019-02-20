@@ -81,6 +81,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                #自定义上下文处理器的位置
+                'supermarket.context_processor.get_daytime',
+            
             ],
         },
     },

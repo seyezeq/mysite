@@ -8,6 +8,9 @@
     {{request.session.carlist}}
    
     {#展示用户名cookie#}
+    {#利用自定义上下文处理器展示内容#}
+    {{now}}<br>
+    {{now_str}}
     欢迎您：{{request.COOKIES.username | supermarket_showgender}}
 
 
@@ -57,14 +60,21 @@
             sum_count = parseInt(count) + 1;
             //获取单价
             let  price = $("#price_"+id).html();
+            let sumprice = $('#sum_price').html();
+            $('#sum_price').html(parseInt(sumprice) +(parseInt(price)));
   
         }else{
+            //获取单价
+            let  price = $("#price_"+id).html();
             if(count >1){
                 sum_count = parseInt(count) - 1
             }else if(count <= 1){
                 $("#tr_"+id).remove();
 
             }
+            
+            let sumprice = $('#sum_price').html();
+            $('#sum_price').html(parseInt(sumprice) -(parseInt(price)));
         }
         //重新赋值
         $("#live_count_"+id).val(sum_count);
