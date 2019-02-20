@@ -31,9 +31,11 @@ urlpatterns = [
     #添加购物车
     path('/addcart',AddCart.as_view()),
     #购物车列表
-    path('/cartlist',check_login(CartList.as_view())),
+    path('/cartlist',CartList.as_view()),
     #清空购物车
-    path('/clearcart',ClearCart.as_view())
+    path('/clearcart',ClearCart.as_view()),
+    #删除购物车商品
+    path("/delcart",DelCart.as_view()),
 
 
 ]

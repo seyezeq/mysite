@@ -13,6 +13,7 @@ class User(models.Model):
     time = models.DateTimeField()
     #图片 
     img = models.CharField(max_length=200)
+    gender = models.IntegerField()
 
 
     #声明表名

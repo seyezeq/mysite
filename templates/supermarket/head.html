@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+        {# 使用静态文件路径，需要导入静态文件夹 #}
+        {% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{html_title}}</title>
+    {# 导入jquery库 #}
+    <script src="{% static 'js/jquery-1.12.1.min.js' %}"></script>
+    {# 导入axios库 #}
+    <script src="{% static 'js/axios.js' %}"></script>
+</head>

@@ -1,10 +1,19 @@
 #导包
 #导入模板模块
 from django import template
-
+from mysite.models import User
 #注册过滤器对象
 register = template.Library()
-
+#定义获取性别的自定义过滤器
+@register.filter
+def supermarket_showgender(val):
+    res = User.objects.get(username=val)
+    if res.gender == 1:
+        return str(val) + "先生"
+    elif res.gender == 0:
+        return str(val) + "女士"
+    else:
+        return str(val)+ "未知"
 #自定义过滤器
 #在django内部，通过装饰器的方式来注册自定义过滤器
 @register.filter

@@ -12,8 +12,12 @@ import json
 import time
 #导入django内置的密码库
 from django.contrib.auth.hashers import make_password,check_password
-
-
+#导入自定义过滤器方法
+import mysite.templatetags.my_filter
+#导入类装饰器库
+from django.utils.decorators import method_decorator
+#导入装饰器
+from mysite.d7 import check_login
 #定义添加购物车逻辑
 class AddCart(View):
     #定义添加方法
@@ -48,23 +52,42 @@ class ClearCart(View):
             print(str(e))
             pass
         return HttpResponse('清空购物车成功')
-
-
+#定义删除购物车逻辑
+class DelCart(View):
+    def post(self,request):
+        id = request.POST.get('id')
+        id = int(id)
+        #获取购物车列表
+        cartlist = request.session.get('cartlist')
+       #过滤删掉的商品ID
+        slist = filter(lambda x:x!=id,cartlist)
+        slist = list(slist)
+        #将过滤后的购物车赋值
+        request.session['cartlist'] = slist
+        return HttpResponse('删除成功')
 #定义购物车列表
-
-
 class CartList(View):
     #定义列表方法
+    @method_decorator(check_login,name="get")
     def get(self,request):
         #读取session
         cartlist_old = request.session.get('cartlist',0)
-
         #使用orm in 操作 来实现单条语句查询
         #捕获异常
         try:
             cartlist = Product.objects.filter(id__in=cartlist_old)
         except Exception as e:
             cartlist = 0
+        #定义title
+        html_title="购物车列表"
+        #j计算总价
+        sum_price = 0
+        #遍历商品列表
+        for item in cartlist:
+            #调用自定义过滤器方法来计算商品个数
+            product_count = mysite.templatetags.my_filter.supermarket_count(item.id,cartlist_old)
+
+            sum_price += (item.price*product_count)
 
         return render(request,'supermarket/cartlist.html',locals())
 
@@ -137,7 +160,7 @@ class Login(View):
 
         #利用check_password来比对密码
         #print(check_password(password,make_password(password,'123')))
-        print(password_hash)       
+
 
         #判断用户名和密码
         res = User.objects.filter(username=username,password=password_hash).count()
