@@ -36,6 +36,12 @@ urlpatterns = [
     path('/clearcart',ClearCart.as_view()),
     #删除购物车商品
     path("/delcart",DelCart.as_view()),
+    #修改购物车
+    path("/editcart",EditCart.as_view()),
+    #批量修改购物车
+    path("/doeditcart",DoEditCart.as_view()),
 
+    #批量删除
+    path("/group_del",Group_Del.as_view()),
 
 ]

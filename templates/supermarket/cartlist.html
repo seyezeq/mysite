@@ -6,13 +6,13 @@
     {{ request.path }}
     {#上下文处理器 展示session#}
     {{request.session.carlist}}
-   
+
     {#展示用户名cookie#}
     {#利用自定义上下文处理器展示内容#}
     {{now}}<br>
     {{now_str}}
     欢迎您：{{request.COOKIES.username | supermarket_showgender}}
-
+    ip:{{ip}} 浏览器:{{liulan}}
 
     {{ 123 | my_str }}
     {{ cartlist_old }}
@@ -39,8 +39,16 @@
                     <button onclick="doadd('{{item.id}}','-')">-</button>
                     <input id="live_count_{{item.id}}" value="{{ item.id | supermarket_count:cartlist_old }}">
                     <button onclick="doadd('{{item.id}}','+')">+</button>
+                
+                    {#使用隐藏域#}
+                    <input id="hidden_{{item.id}}" type="hidden" value="{{item.count}}">
+                
                 </td>
-                <td><button onclick="delpro('{{item.id}}')">删除商品</button></td>
+                <td>
+                    <button onclick="delpro('{{item.id}}')">删除商品</button>
+                    &nbsp;
+                    <button onclick="doeditcart('{{item.id}}')">确认修改</button>
+                </td>
     </tr>
         {% endfor %}
     </tbody>    
@@ -51,7 +59,32 @@
 </body>
 </html>
 <script>
-     function doadd(id,type){
+    //定义直接修改购物车逻辑
+    function doeditcart(id){
+        //获取商品数量
+        let count = $("#live_count_"+id).val();
+        //判读购买数量是否大于库存
+        if(parseInt(count)> parseInt($("#hidden_"+id).val())){
+            alert("库存不足");return false;
+        }
+        let param = new URLSearchParams();
+        param.append('id',id);
+        param.append('count',count);
+        axios({
+            url:"/supermarket/doeditcart",
+            data:param,
+            method:"post",
+            responseType:"text"
+        })
+        .then(function(obj){
+            //判断库存
+            if(obj.data != "ok"){
+                alert("库存不足");
+            }
+        })
+    }
+
+    function doadd(id,type){
         //进行运算
         let count = $("#live_count_"+id).val();
         var sum_count = 0;
@@ -62,7 +95,7 @@
             let  price = $("#price_"+id).html();
             let sumprice = $('#sum_price').html();
             $('#sum_price').html(parseInt(sumprice) +(parseInt(price)));
-  
+
         }else{
             //获取单价
             let  price = $("#price_"+id).html();
@@ -78,11 +111,25 @@
         }
         //重新赋值
         $("#live_count_"+id).val(sum_count);
+        //发送异步请求
+        let param = new URLSearchParams();
+        param.append('id',id);
+        param.append('type',type);
+        axios({
+            url:"/supermarket/editcart",
+            data:param,
+            method:"post",
+            responseType:"text"
+        })
+        .then(function(obj){
+            console.log(obj)
+        })
+
     }
-       
+        
     function delpro(id){
         //定义加减运算逻辑
-       
+        
         let param = new URLSearchParams();
         param.append('id',id);
         axios({
@@ -102,8 +149,7 @@
             $("#tr_"+id).remove();
             let sum_price = $('#sum_price').html();
             // 将减法运算后的值赋值给总价
-            $("#sum_price").html(parseInt(sum_price) - all_price)
-            parse
+            $("#sum_price").html(parseInt(sum_price) - all_price);
         })
     }
 

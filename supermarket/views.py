@@ -18,6 +18,8 @@ import mysite.templatetags.my_filter
 from django.utils.decorators import method_decorator
 #导入装饰器
 from mysite.d7 import check_login
+#导入分页器
+from django.core.paginator import Paginator
 #定义添加购物车逻辑
 class AddCart(View):
     #定义添加方法
@@ -90,9 +92,42 @@ class CartList(View):
             sum_price += (item.price*product_count)
 
         return render(request,'supermarket/cartlist.html',locals())
-
-
-
+#定义单个修改购物车数量
+class EditCart(View):
+    def post(self,request):
+        id = request.POST.get("id")
+        type = request.POST.get("type")
+        #获取购物车
+        cartlist = request.session.get('cartlist')
+        if type == "+":
+            cartlist.append(int(id))
+        else:
+            cartlist.remove(int(id))
+        request.session['cartlist'] = cartlist
+        return HttpResponse('操作成功')
+#批量修改购物车数量
+class DoEditCart(View):
+    def post(self,request):
+        id = request.POST.get("id")
+        count = request.POST.get("count")
+        #读取库存
+        # procount = Product.objects.filter(id=int(id)).values('count')
+        # procount = procount[0]['count']
+        procount = Product.objects.get(id=int(id))
+        procount = procount.count
+        if int(count) > procount:
+            return HttpResponse("库存不足")
+        #获取购物车
+        carlist = request.session.get('cartlist')
+        #清除更改购物车商品
+        cartlist_new = filter(lambda x:x!=int(id),carlist)
+        cartlist_new = list(cartlist_new)
+        #将购买数量添加到购物车
+        for n in range(int(count)):
+            cartlist_new.append(int(id))
+        #购物车重新赋值
+        request.session['cartlist'] = cartlist_new
+        return HttpResponse("ok")
 #定义注销功能
 class Logout(View):
     #定义注销方法
@@ -133,8 +168,19 @@ class ProEdit(View):
 class ProList(View):
     #定义商品列表方法
     def get(self,request):
+        searchtitle = request.GET.get('searchtitle','')
+        #清除字符串两边 的空格
+        searchtitle = searchtitle.strip()
+        res = Product.objects.filter(name__contains = searchtitle).order_by('-price','-count')
         #读取数据库
-        res = Product.objects.all()
+        # res = Product.objects.all()
+        #建立分页器对象 ,第一个参数结果集，第二个每页的参数
+        paginator = Paginator(res,3)
+        #接收分页的参数
+        page = request.GET.get('page',1)
+        #将结果集按照分页逻辑切片
+        res = paginator.get_page(page)
+        page_list = [s for s in range(1,res.paginator.num_pages+1)]
         #获取用户名
         username = request.COOKIES.get('username','未登录')
         #对用户名进行解码
@@ -208,6 +254,14 @@ class Reg(View):
             user.save()
             data = json.dumps({'msg':'恭喜您，注册成功'},ensure_ascii=False)
             return HttpResponse(data,content_type='application/json')
-
+#定义批量删除逻辑
+class Group_Del(View):
+    def post(self,request):
+        ids = request.POST.get("ids")
+        #使用eval方法来强转为list
+        ids = eval('['+ids+"]")
+        #删除操作
+        Product.objects.filter(id__in=ids).delete()
+        return HttpResponse("ok")
 
         

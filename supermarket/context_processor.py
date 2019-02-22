@@ -11,5 +11,7 @@ def get_daytime(request):
         now_str = "下午好"
     else:
         now_str = "晚上好"
+    ip = request.META.get('REMOTE_ADDR')
+    liulan =request.META.get('HTTP_USER_AGENT')
     #给模板传递所有的变量
     return locals()

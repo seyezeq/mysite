@@ -9,9 +9,11 @@ class Product(models.Model):
     name = models.CharField(max_length=200)
     #价格
     price = models.IntegerField()
-
+    count = models.IntegerField()
 
     #声明表名
     class Meta:
         #必须和数据库中的表名吻合
         db_table = "product"
+    def __str__(self):
+        return self.name

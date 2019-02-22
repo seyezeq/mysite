@@ -1,67 +1,220 @@
-<!DOCTYPE html>
-<html lang="en">
-        {# 使用静态文件路径，需要导入静态文件夹 #}
-        {% load static %}
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>商品列表页面</title>
-    {# 导入jquery库 #}
-    <script src="{% static 'js/jquery-1.12.1.min.js' %}"></script>
-    {# 导入axios库 #}
-    <script src="{% static 'js/axios.js' %}"></script>
-</head>
+{% include 'supermarket/head.html' %}
 <body>
 
-
-    欢迎您，{{ username }}   &nbsp; <a href="/supermarket/logout">注销</a> &nbsp;&nbsp; <a href="/supermarket/cartlist">我的购物车</a>
-
-    &nbsp;&nbsp;
+    欢迎您,{{ username }}&nbsp;
+    <a href="/supermarket/logout">注销</a>
+    <a href="/supermarket/cartlist">购物车</a>
     <a href="/supermarket/clearcart">清空购物车</a>
 
-    {# 遍历商品列表 #}
-    <table style="padding:20px;line-height:30px;">
-        <thead>
-            <tr><td>编号</td><td>名称</td><td>价格</td><td>操作</td></tr>
-        </thead>
-    {% for item in res %}
 
-    <tr id="tr_{{ item.id }}"> <td>{{ item.id }}</td> <td>{{ item.name }}</td> 
-        
-        <td><input type="text" id="input_{{ item.id }}"  value='{{ item.price }}' /></td> 
+    {# 加入检索逻辑 #}
+    <div style="margin-top:30px;line-height:30px;padding:10px;">
+        <form method='GET'>
+            <input type="text" name="searchtitle"/>&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" value="搜索"/>
+        </form>
+    </div>
     
-    <td>
+    {# 遍历商品列表页 #}
+    <table style="padding:20px;line-height:30px;bgcolor:red;" border="1">
+ 
+        <tr>
+            <td>
+                <input type="checkbox" onclick="checkall(this,'product_id')"/>
+            </td>
+            <td>编号</td>
+            <td>名称</td>
+            <td>价格</td>
+            <td>库存</td>
+            <td>操作</td>
+        </tr>
+        {% for item in res %}
+        <tr id='tr_{{ item.id }}'>
+            <td>
+                <input name='product_id' type="checkbox" value="{{ item.id }}"/>
+            </td>
+            <td>{{ item.id }}</td>
+            <td>{{ item.name }}</td>
+            <td>
+                <input type="text" id='input_{{ item.id }}' value="{{ item.price }}"/>
+            </td>
+            <td>{{ item.count }}</td>
+            <td>
+                {% if username == 'admin' %}
+                <button onclick="edit('{{ item.id }}')">编辑</button>
+                &nbsp;
+                <button onclick="del('{{ item.id }}')">删除</button>
+                {% else %}
+                <button onclick="get('{{ item.id }}')">加入购物车</button>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+    {# 批量删除按钮 #}
+    {% if username == 'admin' %}
+    <button onclick="group_del()" style="margin-left:450px;">批量删除</button>
 
-        {% if username == 'admin' %}
-        <button onclick="edit('{{ item.id }}')">编辑</button>
-        &nbsp;
-        <button onclick="del('{{ item.id }}')">删除</button>
-        {% else %}
-        <button onclick="get('{{ item.id }}')">加入购物车</button>
+    {% endif %}
+
+
+
+
+    {# 写分页器逻辑 #}
+    <div>
+        当前是第{{ res.number }}页,一共有{{ res.paginator.num_pages }}页
+        <br/><br/>
+
+        {%  if res.paginator.num_pages != 1 %}
+
+
+        {# 判断首页和上一页 #}
+        <a href="?page=1">首页</a>
+        {# 判断上一页 #}
+        {% if res.has_previous %}
+            <a href="?page={{ res.previous_page_number }}">上一页</a>
+        {% endif %}
+        {# 判断下一页 #}
+        {% if res.has_next %}
+            <a href="?page={{ res.next_page_number }}">下一页</a>
         {% endif %}
 
-    </td>
-    
-    </tr>
+        <a href="?page={{res.paginator.num_pages}}">尾页</a>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <input style=widows:100px; type="text" id='jump'/>
+        &nbsp;&nbsp;&nbsp;&nbsp;
+        <button id="jump_button" onclick="jump()">跳转</button>
 
-    {% endfor %}
-    </table>
+        &nbsp;&nbsp;
+        {# 循环输出页码 #}
+        <select onchange="jumpto(this.value)" id="page_select">
+            {% for item in page_list %}
+            <option
+            
+            value="{{ item }}"
+            {# 循环判断 #}
+            {#{% if res.number == item %}selected = 'selected'{% endif %}#}
+            >第{{ item }}页</option>
+            {% endfor %}
+        </select>
+        {% endif %}
+    </div>
 
     <script>
 
-    //定义添加购物车逻辑
-    function get(id){
+
+    //定义批量选择
+    function checkall(e,name){
+        //获取checkbox的值
+        let items = document.getElementsByName(name);
+        //遍历checkbox
+        for(let i = 0;i<items.length;i++){
+            //将复选框设置赋值
+            items[i].checked = e.checked;
+
+        }
+    }
 
 
-        //请求接口，删除库中数据
-        //是用axios来请求接口
-        //初始化传参
+    //定义批量删除方法
+    function group_del(){
+        //定义一个空列表
+        let _items = [];
+        //获取checkbox得值
+        let _items_checkbox = document.getElementsByName('product_id');
+        //循环取值
+        for(let i=0;i<_items_checkbox.length;i++){
+
+            //判断是否选中
+            if(_items_checkbox[i].checked){
+            
+            //往数组内添加数据
+            _items.push(_items_checkbox[i].value);
+            }
+
+        }
+        //发送请求进行商品的批量删除
         let param = new URLSearchParams();
         //将参数传递给对象
-        param.append('id',id);
+        param.append('ids',_items);
+        axios({
+            //指定请求地址
+            url:'/supermarket/group_del',
+            //请求参数
+            data:param,
+            //请求类型
+            method:'post',
+            //接口返回值类型
+            responseType:'text'
+        })
+        .then(function(obj){
+            window.location.reload()
+        });
+    }
 
-            axios({
+
+
+
+    //绑定回车事件
+    $('#jump').bind('keyup',function(event){
+
+        //判断点击的是那个键
+        if(event.keyCode == '13'){
+            //帮用户点击一下
+            $('#jump_button').click();
+
+        }
+    });
+
+
+
+    //定义跳转方法
+    function jumpto(page){
+        //定义跳转逻辑
+        window.location.href = '?page='+page;
+    }
+    
+    //定义动态页码选择
+    let now_page = '{{ res.number }}';
+    $('#page_select').val(parseInt(now_page));
+    
+    //定义跳转方法
+    function jump(){
+        //获取用户输入的页面
+        let page = $('#jump').val();
+        //判断非空验证
+        if(page == ''){
+            alert('你输入的页码有误!')
+            return false;
+        }
+        //判断输入的页码是否存在
+        //获取总页数
+        let allpage = '{{ res.paginator.num_pages }}';
+        //判断  ||或者   &&并且
+        if( page < 1 || page > parseInt(allpage)){
+            alert('您输入的页码有误')
+            //将页码删除
+            $('#jump').val('');
+            //将焦点赋值
+            $('#jump').focus();
+            return false;
+        }
+        //跳转操作
+        window.location.href = '?page='+page;
+    }
+
+
+
+
+    //定义添加购物车逻辑
+    function get(id){
+        //请求接口,删除库中数据
+        //用axios来请求接口
+        //初始化传参
+        let param = new URLSearchParams();
+        
+        //将参数传递给对象
+        param.append('id',id);
+        axios({
             //指定请求地址
             url:'/supermarket/addcart',
             //请求参数
@@ -70,32 +223,29 @@
             method:'post',
             //接口返回值类型
             responseType:'text'
+
         })
         .then(function(obj){
             
-          console.log(obj);
-          alert(obj.data);
-
+            console.log(obj);
+            alert(obj.data);
         });
-
-
-
-
     }
+    
+    
     
     //定义修改方法
     function edit(id){
-
-
-        //请求接口，删除库中数据
-        //是用axios来请求接口
+        //请求接口,删除库中数据
+        //用axios来请求接口
         //初始化传参
         let param = new URLSearchParams();
+        
         //将参数传递给对象
         param.append('id',id);
-        param.append('price',$("#input_"+id).val());
-
-            axios({
+        param.append('price',$('#input_'+id).val());
+        
+        axios({
             //指定请求地址
             url:'/supermarket/proedit',
             //请求参数
@@ -104,60 +254,15 @@
             method:'post',
             //接口返回值类型
             responseType:'text'
+
         })
         .then(function(obj){
-            
-          console.log(obj);
+            console.log(obj);
 
         });
-
-
     }
-
-
-
-
-    //定义删除方法
-    function del(id){
-
-
-        //询问用户是否确定
-        if(confirm('请问是否确定') == false){
-
-            return false;
-        }
-
-        //删除页面元素
-        $("#tr_"+id).remove();
-
-        //请求接口，删除库中数据
-        //是用axios来请求接口
-        //初始化传参
-        let param = new URLSearchParams();
-        //将参数传递给对象
-        param.append('id',id);
-
-            axios({
-            //指定请求地址
-            url:'/supermarket/prodel',
-            //请求参数
-            data:param,
-            //请求类型
-            method:'post',
-            //接口返回值类型
-            responseType:'text'
-        })
-        .then(function(obj){
-            
-          console.log(obj);
-
-        });
-
-
-    }
-    
-    
     </script>
     
+
 </body>
 </html>

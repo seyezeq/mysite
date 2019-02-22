@@ -23,7 +23,7 @@
 
 
     {# 使用html5 的进度条标签 max代表最大值 value起始值 #}
-    <progress style="width:400px;" id="pg" max="100" value="0" ></progress>
+    <progress style="width:400px;" id="pg" max="100" value="0" hidden></progress>
 
     <br /><br />
 
@@ -41,7 +41,7 @@
         
         //定义登录方法
         function login(){
-
+        $("#pg").show();
         var username = $("#username").val();
         var password = $("#password").val();
 
