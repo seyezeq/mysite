@@ -49,7 +49,9 @@ INSTALLED_APPS = [
     'mytest',
     'mysite',
     'myapp',
-    'supermarket'
+    'supermarket',
+    "rest_framework",
+    'kaoshi',
 ]
 
 #中间件模式

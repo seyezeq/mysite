@@ -14,10 +14,8 @@
         <label>用户名:</label> <input name='username' type="text" /><br /><br />
         <label>密 码:</label> <input name="password" type="password"  /><br /><br />
 
-        {# 利用clcik时间来刷新验证码 #}
-        {# 通过样式来改变悬停时的图标 #}
+        {# 利用clcik时间来刷新验证码 #}{# 通过样式来改变悬停时的图标 #}
         <img style="cursor:pointer;" src="/captcha" onclick='this.src=this.src+"?"+Math.random()'  />  
-        
         <input name='code' type="text" />
 
         <br /><br />

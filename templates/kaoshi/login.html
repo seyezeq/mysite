@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="../../static/js/jquery-1.12.1.min.js"></script>
+    <script src="../../static/js/axios.js"></script>
+</head>
+<body>
+    用户<input type="text" id="name">
+    <button onclick="sub()"> 提交</button>
+</body>
+</html>
+<script>
+    function sub(){
+        let param = new URLSearchParams();
+        param.append('name',$("#name").val());
+        axios({
+            url:"/kaoshi/do_he",
+            data:param,
+            method:"post",
+            responseType:'text'
+        })
+        .then(function(mes){
+            if(mes.data == 'ok'){
+                alert("注册成功")
+            }
+        })
+    }
+</script>

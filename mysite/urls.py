@@ -34,6 +34,7 @@ urlpatterns = [
     re_path('^upload/(?P<path>.*)$',serve,{'document_root':UPLOAD_ROOT}),
     path('admin/', admin.site.urls),
     path('tu',test.tu),
+    path('kaoshi',include('kaoshi.urls')),
     path('mytest',include('mytest.urls')),
     #定义首页 首页留空 第二个参数 指定路由方法
     path('',d7.index),

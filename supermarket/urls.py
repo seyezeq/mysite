@@ -8,7 +8,18 @@ from django.views.generic import TemplateView
 from supermarket.views import *
 
 #导入装饰器
-from mysite.d7 import check_login
+from mysite.d7 import check_login   
+from supermarket.user import Reg,Login,Logout
+from supermarket.product import *
+from supermarket.cart import *
+#导入路由库
+from rest_framework.routers import DefaultRouter
+from .views import ProductViewsets
+#定义路由对象
+router = DefaultRouter()
+#注册路由
+router.register('/json',ProductViewsets)
+
 
 urlpatterns = [
     #指定渲染注册页面
@@ -40,8 +51,16 @@ urlpatterns = [
     path("/editcart",EditCart.as_view()),
     #批量修改购物车
     path("/doeditcart",DoEditCart.as_view()),
-
     #批量删除
     path("/group_del",Group_Del.as_view()),
+    #个人信息
+    path("/userinfo",UserInfo.as_view()),
+    #修改密码
+    path("/password_update",Password_update.as_view()),
+    # 验证码
+    path("/captcha",test_captcha),
 
 ]
+
+#将路由注入
+urlpatterns += router.urls

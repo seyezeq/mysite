@@ -25,8 +25,10 @@
     {# 使用html5 的进度条标签 max代表最大值 value起始值 #}
     <progress style="width:400px;" id="pg" max="100" value="0" hidden></progress>
 
-    <br /><br />
-
+    <br />
+    <img style="cursor:pointer;" src="/supermarket/captcha" onclick='this.src=this.src+"?"+Math.random()'  />  <br>
+    <input name='code' type="text" />
+    <br>
     <button id='sub' onclick="login()" >提交登录</button>
 
     <!--<input id="sub" onclick="login()" type="button" value="登录" />-->

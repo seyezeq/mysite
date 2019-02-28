@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {# 导入jquery库 #}
+    <script src="{% static 'js/jquery-1.12.1.min.js' %}"></script>
+    {# 导入axios库 #}
+    <script src="{% static 'js/axios.js' %}"></script>
+    <title>用户详情页</title>
+</head>
+<body>
+    用户名：{{ request.COOKIES.username}}
+    <br>
+    所属用户组：
+    {% for i in res%}
+    {{i.1}}{{i.0}}
+    {%endfor%}
+    <br>
+    普通用户：
+    {% for i in res_1%}
+    {{i.1}}{{i.0}}
+    {%endfor%}
+    修改密码：<br>
+    旧密码：<input type='password' id="password"><br>
+    新密码：<input type='password' id="password1"><br>
+    确认密码：<input type='password' id="password2"><br>
+    <button onclick="update()">修改</button>
+
+</body>
+</html>
+<script>
+    function update(){
+        var password = $("#password").val();
+        var password1 = $("#password1").val();;;
+        var password2 = $("#password2").val();/
+        if(password == "" || password1 =="" || password2 == ""){alert("密码不能为空");return false};
+        if(password1 != password2){alert("密码不一致");return false};
+        let param = new URLSearchParams();
+        param.append('password',password);
+        param.append('password1',password1);
+        axios({
+            url:"/supermarket/password_update",
+            data:param,
+            method:'post',
+            responseType:'text'
+        })
+        .then(function(mes){
+            if (mes.data == "修改成功"){alert("修改成功")
+            window.location.href="/supermarket/login"}
+            else{
+                alert("密码不正确")
+            }
+        })
+    }
+</script>

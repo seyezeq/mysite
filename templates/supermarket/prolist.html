@@ -5,7 +5,7 @@
     <a href="/supermarket/logout">注销</a>
     <a href="/supermarket/cartlist">购物车</a>
     <a href="/supermarket/clearcart">清空购物车</a>
-
+    <a href="/supermarket/userinfo">个人信息</a>
 
     {# 加入检索逻辑 #}
     <div style="margin-top:30px;line-height:30px;padding:10px;">
@@ -15,7 +15,7 @@
     </div>
     
     {# 遍历商品列表页 #}
-    <table style="padding:20px;line-height:30px;bgcolor:red;" border="1">
+    <table border="1">
  
         <tr>
             <td>
@@ -30,7 +30,7 @@
         {% for item in res %}
         <tr id='tr_{{ item.id }}'>
             <td>
-                <input name='product_id' type="checkbox" value="{{ item.id }}"/>
+                <input name='product_id' type="checkbox" value="{{ item.id }}" id='checkbox' />
             </td>
             <td>{{ item.id }}</td>
             <td>{{ item.name }}</td>
@@ -52,6 +52,7 @@
     </table>
     {# 批量删除按钮 #}
     {% if username == 'admin' %}
+
     <button onclick="group_del()" style="margin-left:450px;">批量删除</button>
 
     {% endif %}
@@ -73,6 +74,12 @@
         {% if res.has_previous %}
             <a href="?page={{ res.previous_page_number }}">上一页</a>
         {% endif %}
+
+        {% for item in page_list %}
+        <a href="?page={{item}}">{{ item | truncatewords:3 }}</a>
+        {%endfor%}
+
+
         {# 判断下一页 #}
         {% if res.has_next %}
             <a href="?page={{ res.next_page_number }}">下一页</a>
@@ -80,7 +87,7 @@
 
         <a href="?page={{res.paginator.num_pages}}">尾页</a>
         &nbsp;&nbsp;&nbsp;&nbsp;
-        <input style=widows:100px; type="text" id='jump'/>
+        <input style=width:30px; type="text" id='jump'/>
         &nbsp;&nbsp;&nbsp;&nbsp;
         <button id="jump_button" onclick="jump()">跳转</button>
 
@@ -100,12 +107,13 @@
     </div>
 
     <script>
+    
 
-
-    //定义批量选择
+    //定义批量选择(全选,全取消)
     function checkall(e,name){
         //获取checkbox的值
         let items = document.getElementsByName(name);
+
         //遍历checkbox
         for(let i = 0;i<items.length;i++){
             //将复选框设置赋值
@@ -121,16 +129,17 @@
         let _items = [];
         //获取checkbox得值
         let _items_checkbox = document.getElementsByName('product_id');
+ 
         //循环取值
         for(let i=0;i<_items_checkbox.length;i++){
 
             //判断是否选中
             if(_items_checkbox[i].checked){
+        
             
             //往数组内添加数据
             _items.push(_items_checkbox[i].value);
             }
-
         }
         //发送请求进行商品的批量删除
         let param = new URLSearchParams();
@@ -147,7 +156,10 @@
             responseType:'text'
         })
         .then(function(obj){
-            window.location.reload()
+            // window.location.reload()
+            for(let i=0;i<_items.length;i++){
+                $("#tr_"+(_items[i])).remove()
+            }
         });
     }
 
@@ -156,11 +168,11 @@
 
     //绑定回车事件
     $('#jump').bind('keyup',function(event){
-
+        let page = $('#jump').val();
         //判断点击的是那个键
         if(event.keyCode == '13'){
             //帮用户点击一下
-            $('#jump_button').click();
+            window.location.href = '?page='+page;   
 
         }
     });

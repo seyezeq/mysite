@@ -11,10 +11,8 @@ from PIL import ImageDraw
 from PIL import ImageFont
 #导入图片库
 from PIL import Image
-
 #导入io库
 import io
-
 #导入随机库
 import random
 
@@ -24,13 +22,10 @@ from mysite.d7 import check_login
 
 #定义随机颜色方法
 def get_random_color():
-    
     R = random.randrange(255)
     G = random.randrange(255)
     B = random.randrange(255)
-
     return (R,G,B)
-
 #定义随机验证码
 def test_captcha(request):
     #定义背景颜色
@@ -100,7 +95,6 @@ def index(request):
             #先存入session
             request.session['username'] = username
             return HttpResponseRedirect('/d6_info')
-
     return render(request,'d6_login.html')
 
 
